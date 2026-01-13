@@ -1,6 +1,7 @@
 package pl.maksturzynski.cinemabooking.web;
 
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,8 @@ public class FilmWebController {
 
     @GetMapping("/films")
     public String films(Model model) {
-        model.addAttribute("films", filmService.findAll());
+        var page = filmService.findAll(PageRequest.of(0, 50));
+        model.addAttribute("films", page.getContent());
         return "films/list";
     }
 }
