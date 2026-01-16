@@ -15,6 +15,7 @@
         <th>Gatunek</th>
         <th>Wiek</th>
         <th>Reżyser</th>
+        <th>Trailer</th>
     </tr>
     </thead>
     <tbody>
@@ -24,6 +25,13 @@
         <td th:text="${f.genre}">Gatunek</td>
         <td th:text="${f.ageRating}">13</td>
         <td th:text="${f.director}">Reżyser</td>
+        <td>
+            <a th:href="${f.trailerUrl}" target="_blank" rel="noopener"
+               th:text="${f.trailerUrl}">
+                Trailer
+            </a>
+        </td>
+
     </tr>
     </tbody>
 </table>
