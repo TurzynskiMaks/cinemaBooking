@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Repertuar</title>
+</head>
+<body>
+<h1>Repertuar</h1>
+
+<form method="get" action="/repertoire">
+    <label>Data:
+        <input type="date" name="date" th:value="${date}">
+    </label>
+    <button type="submit">Pokaż</button>
+</form>
+
+<hr/>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>Godzina</th>
+        <th>Film</th>
+        <th>Sala</th>
+        <th>Rezerwacja</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="s : ${screenings}">
+        <td th:text="${#temporals.format(s.startTime, 'HH:mm')}">12:00</td>
+        <td th:text="${s.film.title}">Film</td>
+        <td th:text="${s.hall.name}">Sala 1</td>
+        <td>
+            <a th:href="@{'/booking/' + ${s.id}}">Wybierz miejsca</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a href="/">Powrót</a></p>
+</body>
+</html>
