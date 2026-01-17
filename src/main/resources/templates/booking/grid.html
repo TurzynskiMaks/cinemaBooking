@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Wybór miejsc</title>
+    <style>
+        .seat { width: 32px; height: 32px; display:inline-flex; align-items:center; justify-content:center;
+            border:1px solid #333; margin:3px; cursor:pointer; user-select:none; }
+        .free { background:#fff; }
+        .held, .sold { background:#ccc; cursor:not-allowed; }
+        .selected { outline: 3px solid #000; }
+        .row { margin-bottom:8px; }
+    </style>
+</head>
+<body>
+
+<h1>Wybór miejsc</h1>
+<div id="msg"></div>
+
+<div id="grid" th:attr="data-screening-id=${screeningId}">
+    <!-- prosta siatka: grupujemy po rowNum -->
+    <div th:each="row : ${#numbers.sequence(1, 50)}"
+         class="row"
+         th:if="${#lists.size(seats.?[rowNum == #vars.row]) > 0}">
+        <span th:text="'Rząd ' + ${row} + ':'"></span>
+
+        <span th:each="s : ${seats.?[rowNum == #vars.row]}"
+              class="seat"
+              th:classappend="${s.status == 'FREE'} ? ' free' : (${s.status == 'HELD'} ? ' held' : ' sold')"
+              th:attr="data-seat-id=${s.seatId},data-status=${s.status}"
+              th:text="${s.seatNum}">
+  </span>
+    </div>
+
+</div>
+
+<button id="holdBtn">Zablokuj wybrane</button>
+<p><a href="/repertoire">← Wróć do repertuaru</a></p>
+
+<script>
+    const grid = document.getElementById('grid');
+    const screeningId = grid.dataset.screeningId;
+    const msg = document.getElementById('msg');
+
+    function selectedSeatIds() {
+        return Array.from(document.querySelectorAll('.seat.selected'))
+            .map(x => Number(x.dataset.seatId));
+    }
+
+    document.addEventListener('click', (e) => {
+        const el = e.target;
+        if (!el.classList.contains('seat')) return;
+
+        const status = el.dataset.status;
+        if (status !== 'FREE') return;
+
+        el.classList.toggle('selected');
+    });
+
+    document.getElementById('holdBtn').addEventListener('click', async () => {
+        const seatIds = selectedSeatIds();
+        if (seatIds.length === 0) {
+            msg.innerText = 'Wybierz miejsca.';
+            return;
+        }
+
+        const res = await fetch(`/api/v1/screenings/${screeningId}/hold`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ seatIds })
+        });
+
+        if (res.status === 204) {
+            msg.innerText = 'Zablokowano miejsca (HELD). Odświeżam...';
+            location.reload();
+        } else if (res.status === 409) {
+            msg.innerText = 'Konflikt: ktoś już zajął jedno z miejsc. Odśwież i wybierz inne.';
+        } else {
+            msg.innerText = 'Błąd: ' + res.status;
+        }
+    });
+</script>
+
+</body>
+</html>
