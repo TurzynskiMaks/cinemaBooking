@@ -1,0 +1,12 @@
+package pl.maksturzynski.cinemabooking.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import pl.maksturzynski.cinemabooking.domain.entity.Screening;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public interface ScreeningRepository extends JpaRepository<Screening, Long> {
+
+    List<Screening> findByStartTimeBetween (LocalDateTime from, LocalDateTime to);
+}
