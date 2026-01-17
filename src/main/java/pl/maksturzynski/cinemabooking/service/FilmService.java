@@ -57,12 +57,14 @@ public class FilmService {
     }
 
     public Film getFilmDetails(Long id) {
-        Film film = getById(id);
-        film.getImages().size();
-        return film;
+        return getById(id);
     }
 
     public List<FilmImage> getImagesForFilm(Long filmId) {
-        return filmImageRepository.findByFilmIdOrder(filmId);
+        return filmImageRepository.findByFilmIdOrderBySortOrderAsc(filmId);
+    }
+
+    public List<Film> findAll() {
+        return filmRepository.findAll();
     }
 }
