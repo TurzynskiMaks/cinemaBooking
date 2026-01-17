@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
+import pl.maksturzynski.cinemabooking.domain.entity.FilmImage;
 import pl.maksturzynski.cinemabooking.exception.FilmNotFoundException;
+import pl.maksturzynski.cinemabooking.repository.FilmImageRepository;
 import pl.maksturzynski.cinemabooking.repository.FilmRepository;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.List;
 public class FilmService {
 
     private final FilmRepository filmRepository;
+    private final FilmImageRepository filmImageRepository;
 
-    public FilmService(FilmRepository filmRepository) {
+    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository) {
         this.filmRepository = filmRepository;
+        this.filmImageRepository = filmImageRepository;
     }
 
     public Page<Film> findAll(Pageable pageable) {
@@ -50,5 +54,15 @@ public class FilmService {
             throw new FilmNotFoundException(id);
         }
         filmRepository.deleteById(id);
+    }
+
+    public Film getFilmDetails(Long id) {
+        Film film = getById(id);
+        film.getImages().size();
+        return film;
+    }
+
+    public List<FilmImage> getImagesForFilm(Long filmId) {
+        return filmImageRepository.findByFilmIdOrder(filmId);
     }
 }
