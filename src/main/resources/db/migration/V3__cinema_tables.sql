@@ -22,5 +22,5 @@ CREATE TABLE screening (
     CONSTRAINT fk_screening_hall FOREIGN KEY (hall_id) REFERENCES hall(id)
 );
 
-CREATE INDEX idx_screening_start_time ON screening(start_time)
-CREATE INDEX idx_screening_hall_start ON screening(hall_id, start_time)
+CREATE INDEX idx_screening_start_time ON screening(start_time);
+CREATE INDEX idx_screening_hall_start ON screening(hall_id, start_time);
