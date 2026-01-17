@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-public class HoldSeatResponse {
+public class HoldSeatRequest {
 
     @NotEmpty
     @Getter
