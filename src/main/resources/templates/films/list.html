@@ -21,7 +21,9 @@
     <tbody>
     <tr th:each="f : ${films}">
         <td th:text="${f.id}">1</td>
-        <td th:text="${f.title}">Tytuł</td>
+        <td>
+            <a th:href="@{'/films/' + ${f.id}}" th:text="${f.title}">Tytuł</a>
+        </td>
         <td th:text="${f.genre}">Gatunek</td>
         <td th:text="${f.ageRating}">13</td>
         <td th:text="${f.director}">Reżyser</td>
