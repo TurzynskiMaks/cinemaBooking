@@ -71,7 +71,7 @@ public class SeatReservationService {
     }
 
     @Transactional
-    public void holdSeats(Long screeningId, List<Long> seatIds) {
+    public void holdSeats(Long screeningId, List<Long> seatIds, String sessionId) {
         Screening screening = screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new BusinessException("Screening not found: " + screeningId));
 
@@ -92,6 +92,7 @@ public class SeatReservationService {
             sr.setSeat(seat);
             sr.setStatus(SeatStatus.HELD);
             sr.setHeldUntil(heldUntil);
+            sr.setHolderSessionId(sessionId);
 
             try {
                 seatReservationRepository.save(sr);
