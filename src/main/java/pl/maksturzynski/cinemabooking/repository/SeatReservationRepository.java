@@ -6,6 +6,7 @@ import pl.maksturzynski.cinemabooking.domain.entity.SeatStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface SeatReservationRepository extends JpaRepository<SeatReservation, Long> {
 
@@ -14,4 +15,6 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
     long deleteByScreeningIdAndStatusAndHeldUntilBefore(Long screeningId, SeatStatus status, LocalDateTime time);
 
     boolean existsByScreeningIdAndSeatId(Long screeningId, Long seatId);
+
+    Optional<SeatReservation> findByScreeningIdAndSeatId(Long screeningId, Long seatId);
 }
