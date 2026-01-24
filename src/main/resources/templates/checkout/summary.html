@@ -21,6 +21,8 @@
     <p><b>Suma:</b> <span th:text="${cart.total}"></span> PLN</p>
 
     <form method="post" action="/checkout/confirm">
+        <label for="email">Email (opcjonalnie):</label>
+        <input id="email" type="email" name="email" placeholder="user@example.com">
         <button type="submit">Symuluj płatność i kup</button>
     </form>
 

@@ -22,23 +22,25 @@ public class CheckoutService {
     private final TicketRepository ticketRepository;
     private final ScreeningRepository screeningRepository;
     private final SeatRepository seatRepository;
+    private final MailGateway mailGateway;
 
     public CheckoutService(CartService cartService,
                            SeatReservationRepository seatReservationRepository,
                            BookingOrderRepository bookingOrderRepository,
                            TicketRepository ticketRepository,
                            ScreeningRepository screeningRepository,
-                           SeatRepository seatRepository) {
+                           SeatRepository seatRepository, MailGateway mailGateway) {
         this.cartService = cartService;
         this.seatRepository = seatRepository;
         this.bookingOrderRepository = bookingOrderRepository;
         this.seatReservationRepository = seatReservationRepository;
         this.screeningRepository = screeningRepository;
         this.ticketRepository = ticketRepository;
+        this.mailGateway = mailGateway;
     }
 
     @Transactional
-    public BookingOrder pay(HttpSession session) {
+    public BookingOrder pay(HttpSession session, String email) {
         CartVm cart = cartService.getOrCreateCart(session);
         if (cart.getItems().isEmpty()) {
             throw new BusinessException("Cart is empty!");
@@ -87,6 +89,8 @@ public class CheckoutService {
             t.setPrice(it.getUnitPrice());
             ticketRepository.save(t);
         }
+        String ticketText = "ORDER: " + order.getOrderNumber() + "\nTOTAL: " + order.getTotalPrice() + "PLN\n";
+        mailGateway.sendTicketEmail(email, order, ticketText);
 
         cartService.clear(session);
         return order;

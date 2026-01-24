@@ -25,6 +25,7 @@ spring:
     store-type: jdbc
     jdbc:
       initialize-schema: always
-  mail:
-    api-key: ${MAIL_API_KEY:}
-    base-url: ${MAIL_API_URL:}
+
+mail:
+  api-key: ${MAIL_API_KEY:}
+  base-url: ${MAIL_API_URL:}

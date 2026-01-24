@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.maksturzynski.cinemabooking.service.CartService;
 import pl.maksturzynski.cinemabooking.service.CheckoutService;
 
@@ -27,8 +28,10 @@ public class CheckoutWebController {
     }
 
     @PostMapping("/checkout/confirm")
-    public String confirm(Model model, HttpSession session) {
-        var order = checkoutService.pay(session);
+    public String confirm(Model model,
+                          HttpSession session,
+                          @RequestParam(required = false) String email) {
+        var order = checkoutService.pay(session, email);
         model.addAttribute("order", order);
         return "checkout/success";
     }
