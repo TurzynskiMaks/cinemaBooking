@@ -21,7 +21,6 @@ public class MailGateway {
         this.restClient = RestClient.builder()
                 .baseUrl(properties.getBaseUrl())
                 .build();
-        System.out.println("MAIL baseUrl=" + properties.getBaseUrl());
     }
 
     public void sendTicketEmail(String targetEmail, BookingOrder order, String ticketText) {
