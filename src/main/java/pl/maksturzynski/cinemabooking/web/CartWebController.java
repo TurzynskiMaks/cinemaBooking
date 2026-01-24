@@ -2,13 +2,13 @@ package pl.maksturzynski.cinemabooking.web;
 
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import pl.maksturzynski.cinemabooking.domain.cart.TicketType;
 import pl.maksturzynski.cinemabooking.service.CartService;
+import pl.maksturzynski.cinemabooking.web.vm.AddToCartRequest;
 
 @Controller
 public class CartWebController {
@@ -54,5 +54,20 @@ public class CartWebController {
     public String clear(HttpSession session) {
         cartService.clear(session);
         return "redirectL/cart";
+    }
+
+    @PostMapping("/cart/add-many")
+    @ResponseBody
+    public ResponseEntity<Void> addMany(@RequestBody AddToCartRequest req, HttpSession session) {
+        var type = (req.getTicketType() == null || req.getTicketType().isBlank())
+                ? TicketType.NORMAL
+                : TicketType.valueOf(req.getTicketType());
+
+        if (req.getSeatIds() != null) {
+            for (Long seatId : req.getSeatIds()) {
+                cartService.add(session, req.getScreeningId(), seatId, type);
+            }
+        }
+        return ResponseEntity.noContent().build();
     }
 }

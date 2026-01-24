@@ -35,6 +35,7 @@ public class CartService {
     }
 
     public void add(HttpSession session, Long screeningId, Long seatId, TicketType type) {
+        CartVm cart = getOrCreateCart(session);
         Screening screening = screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new BusinessException("Screening not found: " + screeningId));
         Seat seat = seatRepository.findById(seatId)
@@ -53,17 +54,24 @@ public class CartService {
         item.setTicketType(type);
 
         getOrCreateCart(session).addOrReplace(item);
+        session.setAttribute(CART_KEY, cart);
     }
 
     public void updateType(HttpSession session, String key, TicketType type) {
         getOrCreateCart(session).updateTicketType(key, type);
+        CartVm cart = getOrCreateCart(session);
+        session.setAttribute(CART_KEY, cart);
     }
 
     public void remove(HttpSession session, String key) {
         getOrCreateCart(session).remove(key);
+        CartVm cart = getOrCreateCart(session);
+        session.setAttribute(CART_KEY, cart);
     }
 
     public void clear(HttpSession session) {
         getOrCreateCart(session).clear();
+        CartVm cart = getOrCreateCart(session);
+        session.setAttribute(CART_KEY, cart);
     }
 }

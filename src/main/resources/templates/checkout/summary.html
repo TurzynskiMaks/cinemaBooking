@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Podsumowanie</title></head>
+<body>
+
+<h1>Podsumowanie</h1>
+
+<div th:if="${#lists.isEmpty(cart.items)}">
+    <p>Koszyk pusty.</p>
+    <p><a href="/repertoire">Wróć</a></p>
+</div>
+
+<div th:if="${!#lists.isEmpty(cart.items)}">
+    <ul>
+        <li th:each="it : ${cart.items}"
+            th:text="${it.filmTitle} + ' | ' + ${#temporals.format(it.startTime, 'yyyy-MM-dd HH:mm')} + ' | R' + ${it.rowNum} + ' M' + ${it.seatNum} + ' | ' + ${it.ticketType.label} + ' | ' + ${it.unitPrice} + ' PLN'">
+            ...
+        </li>
+    </ul>
+
+    <p><b>Suma:</b> <span th:text="${cart.total}"></span> PLN</p>
+
+    <form method="post" action="/checkout/confirm">
+        <button type="submit">Symuluj płatność i kup</button>
+    </form>
+
+    <p><a href="/cart">← wróć do koszyka</a></p>
+</div>
+
+</body>
+</html>

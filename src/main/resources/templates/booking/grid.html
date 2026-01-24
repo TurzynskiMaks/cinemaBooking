@@ -64,19 +64,37 @@
             return;
         }
 
-        const res = await fetch(`/api/v1/screenings/${screeningId}/hold`, {
+        // 1) HOLD
+        const holdRes = await fetch(`/api/v1/screenings/${screeningId}/hold`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ seatIds })
         });
 
-        if (res.status === 204) {
-            msg.innerText = 'Zablokowano miejsca (HELD). Odświeżam...';
-            location.reload();
-        } else if (res.status === 409) {
+        if (holdRes.status === 204) {
+            msg.innerText = 'Zablokowano miejsca. Dodaję do koszyka...';
+
+            // 2) ADD TO CART (bulk)
+            const cartRes = await fetch(`/cart/add-many`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    screeningId: Number(screeningId),
+                    seatIds: seatIds,
+                    ticketType: "NORMAL"
+                })
+            });
+
+            if (cartRes.status === 204) {
+                window.location.href = '/cart';
+            } else {
+                msg.innerText = 'HOLD OK, ale nie udało się dodać do koszyka. Wejdź na /cart ręcznie.';
+            }
+
+        } else if (holdRes.status === 409) {
             msg.innerText = 'Konflikt: ktoś już zajął jedno z miejsc. Odśwież i wybierz inne.';
         } else {
-            msg.innerText = 'Błąd: ' + res.status;
+            msg.innerText = 'Błąd HOLD: ' + holdRes.status;
         }
     });
 </script>
