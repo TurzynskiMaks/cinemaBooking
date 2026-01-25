@@ -12,9 +12,11 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
-                .csrf(csrf -> csrf.disable())
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().permitAll() // dev: wszystko publiczne
+                )
+                .csrf(csrf -> csrf.disable()) // albo csrf.disable() w dev
+                .headers(h -> h.frameOptions(f -> f.sameOrigin()))
                 .build();
-
     }
 }

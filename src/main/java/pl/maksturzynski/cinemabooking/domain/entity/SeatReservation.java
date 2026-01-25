@@ -39,4 +39,15 @@ public class SeatReservation {
     @Getter
     @Setter
     private LocalDateTime heldUntil;
+
+    @Column(name = "holder_session_id", length = 100)
+    @Getter
+    @Setter
+    private String holderSessionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @Getter
+    @Setter
+    private BookingOrder order;
 }

@@ -28,9 +28,10 @@ public class SeatReservationApiController {
     @PostMapping("/{screeningId}/hold")
     public ResponseEntity<Void> hold(
             @PathVariable Long screeningId,
-            @Valid @RequestBody HoldSeatRequest request
+            @Valid @RequestBody HoldSeatRequest request,
+            jakarta.servlet.http.HttpSession session
             ) {
-        seatReservationService.holdSeats(screeningId, request.getSeatIds());
+        seatReservationService.holdSeats(screeningId, request.getSeatIds(), session.getId());
         return ResponseEntity.noContent().build();
     }
 }
