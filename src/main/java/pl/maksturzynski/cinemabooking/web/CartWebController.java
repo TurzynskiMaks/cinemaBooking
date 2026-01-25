@@ -53,7 +53,7 @@ public class CartWebController {
     @PostMapping("/cart/clear")
     public String clear(HttpSession session) {
         cartService.clear(session);
-        return "redirectL/cart";
+        return "redirect:/cart";
     }
 
     @PostMapping("/cart/add-many")

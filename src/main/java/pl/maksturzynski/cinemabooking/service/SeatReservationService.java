@@ -59,6 +59,8 @@ public class SeatReservationService {
             SeatReservation sr = bySeatId.get(seat.getId());
             if (sr == null) {
                 r.setStatus("FREE");
+            } else if (sr.getStatus() == SeatStatus.HELD && sr.getHeldUntil() != null && sr.getHeldUntil().isBefore(now)) {
+                
             } else if (sr.getStatus() == SeatStatus.SOLD) {
                 r.setStatus("SOLD");
             } else {
