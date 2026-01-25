@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Admin - Film</title></head>
+<body>
+<h1 th:text="${filmId != null} ? 'Edytuj film' : 'Dodaj film'"></h1>
+
+<form th:action="${filmId != null} ? @{/admin/films/{id}(id=${filmId})} : @{/admin/films}"
+      th:object="${form}" method="post">
+
+    <div>
+        <label>Tytuł</label>
+        <input th:field="*{title}">
+        <div th:errors="*{title}"></div>
+    </div>
+
+    <div>
+        <label>Gatunek</label>
+        <input th:field="*{genre}">
+        <div th:errors="*{genre}"></div>
+    </div>
+
+    <div>
+        <label>Wiek</label>
+        <input type="number" th:field="*{ageRating}">
+        <div th:errors="*{ageRating}"></div>
+    </div>
+
+    <div>
+        <label>Reżyser</label>
+        <input th:field="*{director}">
+        <div th:errors="*{director}"></div>
+    </div>
+
+    <div>
+        <label>Obsada</label>
+        <textarea th:field="*{castText}"></textarea>
+        <div th:errors="*{castText}"></div>
+    </div>
+
+    <div>
+        <label>Trailer URL</label>
+        <input th:field="*{trailerUrl}">
+        <div th:errors="*{trailerUrl}"></div>
+    </div>
+
+    <button type="submit">Zapisz</button>
+</form>
+
+<p><a href="/admin/films">← Wróć</a></p>
+</body>
+</html>

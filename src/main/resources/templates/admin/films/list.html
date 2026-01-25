@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Admin - Filmy</title></head>
+<body>
+<h1>Filmy</h1>
+
+<p><a href="/admin">← Admin</a> | <a href="/admin/films/new">+ Dodaj</a></p>
+
+<table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Tytuł</th><th>Akcje</th></tr>
+    <tr th:each="f : ${films}">
+        <td th:text="${f.id}"></td>
+        <td th:text="${f.title}"></td>
+        <td>
+            <a th:href="@{/admin/films/{id}/edit(id=${f.id})}">Edytuj</a>
+            <form th:action="@{/admin/films/{id}/delete(id=${f.id})}" method="post" style="display:inline;">
+                <button type="submit">Usuń</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
