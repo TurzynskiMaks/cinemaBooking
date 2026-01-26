@@ -3,9 +3,12 @@ package pl.maksturzynski.cinemabooking.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
 import pl.maksturzynski.cinemabooking.domain.entity.FilmImage;
+import pl.maksturzynski.cinemabooking.dto.web.FilmForm;
 import pl.maksturzynski.cinemabooking.exception.FilmNotFoundException;
 import pl.maksturzynski.cinemabooking.repository.FilmImageRepository;
 import pl.maksturzynski.cinemabooking.repository.FilmRepository;
@@ -66,5 +69,47 @@ public class FilmService {
 
     public List<Film> findAll() {
         return filmRepository.findAll();
+    }
+
+    public List<Film> findAllSimple() {
+        return filmRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+    }
+
+    @Transactional
+    public Film createFromForm(FilmForm form) {
+        Film film = new Film();
+        film.setTitle(form.getTitle());
+        film.setGenre(form.getGenre());
+        film.setAgeRating(form.getAgeRating());
+        film.setDirector(form.getDirector());
+        film.setCastText(form.getCastText());
+        film.setTrailerUrl(form.getTrailerUrl());
+
+        return filmRepository.save(film);
+    }
+
+    public FilmForm toForm(Film film) {
+        FilmForm form = new FilmForm();
+        form.setTitle(film.getTitle());
+        form.setGenre(film.getGenre());
+        form.setAgeRating(film.getAgeRating());
+        form.setDirector(film.getDirector());
+        form.setCastText(film.getCastText());
+        form.setTrailerUrl(film.getTrailerUrl());
+        return form;
+    }
+
+    @Transactional
+    public Film updateFromForm(Long id, FilmForm form) {
+        Film existing = getById(id);
+
+        existing.setTitle(form.getTitle());
+        existing.setGenre(form.getGenre());
+        existing.setAgeRating(form.getAgeRating());
+        existing.setDirector(form.getDirector());
+        existing.setCastText(form.getCastText());
+        existing.setTrailerUrl(form.getTrailerUrl());
+
+        return filmRepository.save(existing);
     }
 }
