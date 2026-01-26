@@ -19,4 +19,6 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
     Optional<SeatReservation> findByScreeningIdAndSeatId(Long screeningId, Long seatId);
 
     void deleteByStatusAndHeldUntilBefore(SeatStatus status, LocalDateTime time);
+
+    void deleteByScreeningIdIn(List<Long> screeningIds);
 }

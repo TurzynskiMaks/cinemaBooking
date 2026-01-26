@@ -1,0 +1,15 @@
+services:
+  cinematron:
+    build: .
+    image: turzynskimaks/cinematron:latest
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - cinema_data:/data
+
+volumes:
+  cinema_data:

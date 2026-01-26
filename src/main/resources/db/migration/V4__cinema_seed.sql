@@ -11,4 +11,4 @@ INSERT INTO screening (film_id, hall_id, start_time, duration_minutes) VALUES
 (1, 1, TIMESTAMP '2026-02-16 12:00:00', 120),
 (1, 1, TIMESTAMP '2026-02-16 16:00:00', 120),
 (2, 1, TIMESTAMP '2026-02-16 18:30:00', 165),
-(3, 1, TIMESTAMP '2026-02-16 21:30:00', 150);
+(3, 1, TIMESTAMP '2026-01-16 21:30:00', 150);
