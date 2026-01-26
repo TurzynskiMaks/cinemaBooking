@@ -24,19 +24,20 @@ public class SalesStatsDao {
 
     public List<DailySalesRow> salesByDay(LocalDateTime from, LocalDateTime to) {
         String sql = """
-                SELECT CAST(created_at AS DATE) AS day,
-                    COUNT(*) AS tickets_count,
-                    COALESCE(SUM(total_price), 0) AS revenue
-                FROM booking_order
-                WHERE status = 'PAID'
-                    AND created_at >= ?
-                    AND created_at < ?
-                GROUP BY CAST(created_at AS DATE)
-                ORDER BY day
-                """;
+                    SELECT CAST(o.created_at AS DATE) AS sale_day,
+                           COUNT(t.id) AS tickets_count,
+                           COALESCE(SUM(t.price), 0) AS revenue
+                    FROM ticket t
+                    JOIN booking_order o ON o.id = t.order_id
+                    WHERE o.status = 'PAID'
+                      AND o.created_at >= ?
+                      AND o.created_at < ?
+                    GROUP BY CAST(o.created_at AS DATE)
+                    ORDER BY sale_day
+                    """;
 
         RowMapper<DailySalesRow> mapper = (ResultSet results, int rowNum) -> {
-            LocalDate day = results.getDate("day").toLocalDate();
+            LocalDate day = results.getDate("sale_day").toLocalDate();
             long tickets = results.getLong("tickets_count");
             BigDecimal revenue = results.getBigDecimal("revenue");
             return new DailySalesRow(day, tickets, revenue);
