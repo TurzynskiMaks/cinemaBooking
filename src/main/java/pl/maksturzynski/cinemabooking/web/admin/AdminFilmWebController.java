@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
 import pl.maksturzynski.cinemabooking.dto.web.FilmForm;
+import pl.maksturzynski.cinemabooking.exception.BusinessException;
 import pl.maksturzynski.cinemabooking.service.FilmService;
 
 @Controller
@@ -62,8 +64,14 @@ public class AdminFilmWebController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable long id) {
-        filmService.delete(id);
+    public String delete(@PathVariable long id, RedirectAttributes redir) {
+        try {
+            filmService.delete(id);
+            redir.addFlashAttribute("success", "Film removed.");
+        } catch (BusinessException ex) {
+            redir.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/admin/films";
+
     }
 }

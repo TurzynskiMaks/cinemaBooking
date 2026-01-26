@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
 import pl.maksturzynski.cinemabooking.domain.entity.FilmImage;
 import pl.maksturzynski.cinemabooking.dto.web.FilmForm;
+import pl.maksturzynski.cinemabooking.exception.BusinessException;
 import pl.maksturzynski.cinemabooking.exception.FilmNotFoundException;
 import pl.maksturzynski.cinemabooking.repository.FilmImageRepository;
 import pl.maksturzynski.cinemabooking.repository.FilmRepository;
+import pl.maksturzynski.cinemabooking.repository.ScreeningRepository;
 
 import java.util.List;
 
@@ -20,10 +22,12 @@ public class FilmService {
 
     private final FilmRepository filmRepository;
     private final FilmImageRepository filmImageRepository;
+    private final ScreeningRepository screeningRepository;
 
-    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository) {
+    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository, ScreeningRepository screeningRepository) {
         this.filmRepository = filmRepository;
         this.filmImageRepository = filmImageRepository;
+        this.screeningRepository = screeningRepository;
     }
 
     public Page<Film> findAll(Pageable pageable) {
@@ -55,6 +59,9 @@ public class FilmService {
     public void delete(Long id) {
         if (!filmRepository.existsById(id)) {
             throw new FilmNotFoundException(id);
+        }
+        if (screeningRepository.existsByFilmId(id)) {
+            throw new BusinessException("Can't remove movie, there are screenings of it");
         }
         filmRepository.deleteById(id);
     }

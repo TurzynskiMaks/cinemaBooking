@@ -5,7 +5,13 @@
 <h1>Filmy</h1>
 
 <p><a href="/admin">← Admin</a> | <a href="/admin/films/new">+ Dodaj</a></p>
+<div th:if="${error}" style="color: #b00020; font-weight: 600; margin: 10px 0;">
+     Nie można usunąć filmu, ma zaplanowane seanse
+</div>
 
+<div th:if="${success}" style="color: #0a7a0a; font-weight: 600; margin: 10px 0;">
+     Film usunięty
+</div>
 <table border="1" cellpadding="6">
     <tr><th>ID</th><th>Tytuł</th><th>Akcje</th></tr>
     <tr th:each="f : ${films}">
