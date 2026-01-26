@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
 import pl.maksturzynski.cinemabooking.domain.entity.FilmImage;
+import pl.maksturzynski.cinemabooking.domain.entity.Screening;
 import pl.maksturzynski.cinemabooking.dto.web.FilmForm;
 import pl.maksturzynski.cinemabooking.exception.BusinessException;
 import pl.maksturzynski.cinemabooking.exception.FilmNotFoundException;
-import pl.maksturzynski.cinemabooking.repository.FilmImageRepository;
-import pl.maksturzynski.cinemabooking.repository.FilmRepository;
-import pl.maksturzynski.cinemabooking.repository.ScreeningRepository;
+import pl.maksturzynski.cinemabooking.repository.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,11 +24,15 @@ public class FilmService {
     private final FilmRepository filmRepository;
     private final FilmImageRepository filmImageRepository;
     private final ScreeningRepository screeningRepository;
+    private final SeatReservationRepository seatReservationRepository;
+    private final TicketRepository ticketRepository;
 
-    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository, ScreeningRepository screeningRepository) {
+    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository, ScreeningRepository screeningRepository, SeatReservationRepository seatReservationRepository, TicketRepository ticketRepository) {
         this.filmRepository = filmRepository;
         this.filmImageRepository = filmImageRepository;
         this.screeningRepository = screeningRepository;
+        this.seatReservationRepository = seatReservationRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public Page<Film> findAll(Pageable pageable) {
@@ -56,13 +61,29 @@ public class FilmService {
         return filmRepository.save(existing);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!filmRepository.existsById(id)) {
             throw new FilmNotFoundException(id);
         }
-        if (screeningRepository.existsByFilmId(id)) {
-            throw new BusinessException("Can't remove movie, there are screenings of it");
+        LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+
+        boolean hasScreeningsAhead = screeningRepository
+                .existsByFilmIdAndStartTimeGreaterThanEqual(id, todayStart);
+
+        if (hasScreeningsAhead) {
+            throw new BusinessException("Film has screenings ahead!");
         }
+        List<Long> screeningIds = screeningRepository.findAllByFilmId(id).stream()
+                        .map(Screening::getId)
+                                .toList();
+        if (!screeningIds.isEmpty()) {
+            seatReservationRepository.deleteByScreeningIdIn(screeningIds);
+            ticketRepository.deleteByScreeningIdIn(screeningIds);
+
+            screeningRepository.deleteAllByIdInBatch(screeningIds);
+        }
+
         filmRepository.deleteById(id);
     }
 
