@@ -12,8 +12,12 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().permitAll() // dev: wszystko publiczne
+                        .requestMatchers(
+                                "/swagger-ui.html", "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/favicon.ico", "h2-console/**"
+                        ).permitAll()
+
                 )
                 .csrf(csrf -> csrf.disable()) // albo csrf.disable() w dev
                 .headers(h -> h.frameOptions(f -> f.sameOrigin()))
