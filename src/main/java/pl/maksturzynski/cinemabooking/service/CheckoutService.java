@@ -49,14 +49,10 @@ public class CheckoutService {
         String sessionId = session.getId();
         LocalDateTime now = LocalDateTime.now();
 
-        BookingOrder order = new BookingOrder();
-        order.setOrderNumber("TCK-"+ UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        order.setSessionId(sessionId);
-        order.setTotalPrice(cart.getTotal());
-        order.setStatus("PAID");
-        order.setCreatedAt(now);
 
-        order = bookingOrderRepository.save(order);
+        record Validated(CartItemVm it, SeatReservation sr, Screening screening, Seat seat) {}
+
+        var validated = new java.util.ArrayList<Validated>();
 
         for (CartItemVm it : cart.getItems()) {
             SeatReservation sr = seatReservationRepository
@@ -73,26 +69,46 @@ public class CheckoutService {
                 throw new BusinessException("This seat is not HELD by Your session! (" + it.getSeatId() + ")");
             }
 
+            Screening screening = screeningRepository.findById(it.getScreeningId())
+                    .orElseThrow(() -> new BusinessException("Screening not found: " + it.getScreeningId()));
+            Seat seat = seatRepository.findById(it.getSeatId())
+                    .orElseThrow(() -> new BusinessException("Seat not found: " + it.getSeatId()));
+
+            validated.add(new Validated(it, sr, screening, seat));
+        }
+
+
+        BookingOrder order = new BookingOrder();
+        order.setOrderNumber("TCK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        order.setSessionId(sessionId);
+        order.setTotalPrice(cart.getTotal());
+        order.setStatus("PAID");
+        order.setCreatedAt(now);
+
+        order = bookingOrderRepository.save(order);
+
+        // 3) Aktualizacja SR + tworzenie biletów
+        for (Validated v : validated) {
+            SeatReservation sr = v.sr();
             sr.setStatus(SeatStatus.SOLD);
             sr.setHeldUntil(null);
             sr.setOrder(order);
             seatReservationRepository.save(sr);
 
-            Screening screening = screeningRepository.findById(it.getScreeningId()).orElseThrow();
-            Seat seat = seatRepository.findById(it.getSeatId()).orElseThrow();
-
             Ticket t = new Ticket();
             t.setOrder(order);
-            t.setScreening(screening);
-            t.setSeat(seat);
-            t.setTicketType(it.getTicketType().name());
-            t.setPrice(it.getUnitPrice());
+            t.setScreening(v.screening());
+            t.setSeat(v.seat());
+            t.setTicketType(v.it().getTicketType().name());
+            t.setPrice(v.it().getUnitPrice());
             ticketRepository.save(t);
         }
+
         String ticketText = "ORDER: " + order.getOrderNumber() + "\nTOTAL: " + order.getTotalPrice() + "PLN\n";
         mailGateway.sendTicketEmail(email, order, ticketText);
 
         cartService.clear(session);
         return order;
     }
+
 }
