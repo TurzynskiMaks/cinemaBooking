@@ -1,4 +1,8 @@
 spring:
+  security:
+    user:
+      name: ${APP_USER:du}
+      password: ${APP_PASSWORD:pa}
   web:
     resources:
       static-locations:
