@@ -1,6 +1,5 @@
 services:
   cinematron:
-    build: .
     image: turzynskimaks/cinematron:latest
     ports:
       - "8080:8080"
