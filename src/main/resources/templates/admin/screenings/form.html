@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Admin - Dodaj seans</title></head>
+<body>
+
+<h1>Dodaj seans</h1>
+
+<div th:if="${globalError != null}">
+    <p style="color:red" th:text="${globalError}"></p>
+</div>
+
+<form method="post" action="/admin/screenings" th:object="${form}">
+    <div>
+        <label>Film</label>
+        <select th:field="*{filmId}">
+            <option value="">-- wybierz --</option>
+            <option th:each="f : ${films}" th:value="${f.id}" th:text="${f.title}"></option>
+        </select>
+        <div style="color:red" th:errors="*{filmId}"></div>
+    </div>
+
+    <div>
+        <label>Sala</label>
+        <select th:field="*{hallId}">
+            <option value="">-- wybierz --</option>
+            <option th:each="h : ${halls}" th:value="${h.id}" th:text="${h.name}"></option>
+        </select>
+        <div style="color:red" th:errors="*{hallId}"></div>
+    </div>
+
+    <div>
+        <label>Start (ISO)</label>
+        <input th:field="*{startTime}" placeholder="2026-01-26T18:30">
+        <div style="color:red" th:errors="*{startTime}"></div>
+        <small>Format: 2026-01-26T18:30</small>
+    </div>
+
+    <div>
+        <label>Czas trwania (min)</label>
+        <input type="number" th:field="*{durationMinutes}">
+        <div style="color:red" th:errors="*{durationMinutes}"></div>
+    </div>
+
+    <button type="submit">Zapisz</button>
+</form>
+
+<p><a href="/admin/screenings">← Wróć</a></p>
+
+</body>
+</html>

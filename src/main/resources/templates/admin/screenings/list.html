@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Admin - Seanse</title></head>
+<body>
+<h1>Seanse</h1>
+
+<p><a href="/admin">← Admin</a> | <a href="/admin/screenings/new">+ Dodaj seans</a></p>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Film</th>
+        <th>Sala</th>
+        <th>Start</th>
+        <th>Czas (min)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="s : ${screenings}">
+        <td th:text="${s.id}"></td>
+        <td th:text="${s.film.title}"></td>
+        <td th:text="${s.hall.name}"></td>
+        <td th:text="${#temporals.format(s.startTime, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${s.durationMinutes}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
