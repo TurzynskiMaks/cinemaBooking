@@ -42,6 +42,10 @@
         <input th:field="*{trailerUrl}">
         <div th:errors="*{trailerUrl}"></div>
     </div>
+    <div>
+        <label>Obrazki (URL, po jednym w linii)</label>
+        <textarea th:field="*{imageUrls}" rows="6" placeholder="https://...\nhttps://..."></textarea>
+    </div>
 
     <button type="submit">Zapisz</button>
 </form>

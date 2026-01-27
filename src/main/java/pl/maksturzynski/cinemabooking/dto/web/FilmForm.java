@@ -15,4 +15,5 @@ public class FilmForm {
     @NotBlank @Size(max = 150) private String director;
     @NotBlank @Size(max = 500) private String castText;
     @Size(max = 500) private String trailerUrl;
+    private String imageUrls;
 }

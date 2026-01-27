@@ -14,6 +14,7 @@ public class BookingOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Setter
     private Long id;
 
     @Column(name = "order_number", nullable = false, unique = true, length = 50)

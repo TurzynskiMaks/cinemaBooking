@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface FilmImageRepository extends JpaRepository<FilmImage, Long> {
     List<FilmImage> findByFilmIdOrderBySortOrderAsc(Long filmId);
+
+    void deleteByFilmId(long filmId);
 }

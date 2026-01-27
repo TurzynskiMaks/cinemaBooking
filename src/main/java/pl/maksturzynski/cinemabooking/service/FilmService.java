@@ -16,6 +16,7 @@ import pl.maksturzynski.cinemabooking.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -106,14 +107,10 @@ public class FilmService {
     @Transactional
     public Film createFromForm(FilmForm form) {
         Film film = new Film();
-        film.setTitle(form.getTitle());
-        film.setGenre(form.getGenre());
-        film.setAgeRating(form.getAgeRating());
-        film.setDirector(form.getDirector());
-        film.setCastText(form.getCastText());
-        film.setTrailerUrl(form.getTrailerUrl());
-
-        return filmRepository.save(film);
+        applyForm(film, form);
+        film = filmRepository.save(film);
+        syncImages(film, form.getImageUrls());
+        return film;
     }
 
     public FilmForm toForm(Film film) {
@@ -124,6 +121,13 @@ public class FilmService {
         form.setDirector(film.getDirector());
         form.setCastText(film.getCastText());
         form.setTrailerUrl(film.getTrailerUrl());
+
+        var images = filmImageRepository.findByFilmIdOrderBySortOrderAsc(film.getId());
+        String joined = images.stream()
+                .map(FilmImage::getUrl)
+                .reduce((a,b) -> a + "\n" + b)
+                .orElse("");
+        form.setImageUrls(joined);
         return form;
     }
 
@@ -131,13 +135,45 @@ public class FilmService {
     public Film updateFromForm(Long id, FilmForm form) {
         Film existing = getById(id);
 
-        existing.setTitle(form.getTitle());
-        existing.setGenre(form.getGenre());
-        existing.setAgeRating(form.getAgeRating());
-        existing.setDirector(form.getDirector());
-        existing.setCastText(form.getCastText());
-        existing.setTrailerUrl(form.getTrailerUrl());
-
-        return filmRepository.save(existing);
+        applyForm(existing, form);
+        existing = filmRepository.save(existing);
+        syncImages(existing, form.getImageUrls());
+        return existing;
     }
+
+    private void applyForm(Film film, FilmForm form) {
+        film.setTitle(form.getTitle());
+        film.setGenre(form.getGenre());
+        film.setTrailerUrl(form.getTrailerUrl());
+        film.setCastText(form.getCastText());
+        film.setAgeRating(form.getAgeRating());
+        film.setDirector(form.getDirector());
+    }
+
+    private void syncImages(Film film, String imageUrlsRaw) {
+        filmImageRepository.deleteByFilmId(film.getId());
+
+        List<String> urls = parseUrls(imageUrlsRaw);
+        int i = 1;
+        for (String url : urls) {
+            FilmImage img = new FilmImage();
+            img.setFilm(film);
+            img.setUrl(url);
+            img.setSortOrder(i++);
+            filmImageRepository.save(img);
+        }
+    }
+
+    private List<String> parseUrls(String raw) {
+        List<String> out = new ArrayList<>();
+        if (raw == null) return out;
+
+        for (String line : raw.split("\\R")) {
+            String u = line.trim();
+            if (!u.isEmpty()) out.add(u);
+        }
+        return out;
+    }
+
+
 }
