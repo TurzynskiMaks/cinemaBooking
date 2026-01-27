@@ -6,9 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 import pl.maksturzynski.cinemabooking.domain.entity.Film;
 import pl.maksturzynski.cinemabooking.domain.entity.FilmImage;
 import pl.maksturzynski.cinemabooking.domain.entity.Screening;
+import pl.maksturzynski.cinemabooking.dto.api.MovieExternalDto;
 import pl.maksturzynski.cinemabooking.dto.web.FilmForm;
 import pl.maksturzynski.cinemabooking.exception.BusinessException;
 import pl.maksturzynski.cinemabooking.exception.FilmNotFoundException;
@@ -27,13 +29,20 @@ public class FilmService {
     private final ScreeningRepository screeningRepository;
     private final SeatReservationRepository seatReservationRepository;
     private final TicketRepository ticketRepository;
+    private final RestClient restClient;
 
-    public FilmService(FilmRepository filmRepository, FilmImageRepository filmImageRepository, ScreeningRepository screeningRepository, SeatReservationRepository seatReservationRepository, TicketRepository ticketRepository) {
+    public FilmService(FilmRepository filmRepository,
+                       FilmImageRepository filmImageRepository,
+                       ScreeningRepository screeningRepository,
+                       SeatReservationRepository seatReservationRepository,
+                       TicketRepository ticketRepository,
+                       RestClient restClient) {
         this.filmRepository = filmRepository;
         this.filmImageRepository = filmImageRepository;
         this.screeningRepository = screeningRepository;
         this.seatReservationRepository = seatReservationRepository;
         this.ticketRepository = ticketRepository;
+        this.restClient = restClient;
     }
 
     public Page<Film> findAll(Pageable pageable) {
@@ -175,5 +184,50 @@ public class FilmService {
         return out;
     }
 
+    @Transactional
+    public Film importFromExternalApi(String title) {
+        if (filmRepository.existsByTitle(title)) {
+            throw new BusinessException("Film o tytule '" + title + "' już istnieje w bazie!");
+        }
+        MovieExternalDto dto = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("t", title)
+                        .queryParam("apikey", "e5973f8a")
+                        .build())
+                .retrieve()
+                .body(MovieExternalDto.class);
+        if (dto == null || "False".equals(dto.response())) {
+            throw new BusinessException("Nie znaleziono filmu o tytule: " + title);
+        }
+
+
+        Film film = new Film();
+        film.setTitle(dto.title());
+        film.setGenre(dto.genre());
+        film.setDirector(dto.director());
+        film.setCastText(dto.actors());
+        film.setAgeRating(extractAge(dto.rated()));
+
+
+        film = filmRepository.save(film);
+
+
+        if (dto.posterUrl() != null && !dto.posterUrl().equals("N/A")) {
+            syncImages(film, dto.posterUrl());
+        }
+
+        return film;
+    }
+
+
+    private Integer extractAge(String rated) {
+        if (rated == null || rated.equals("N/A")) return 12;
+
+        String digits = rated.replaceAll("\\D+", "");
+        return digits.isEmpty() ? 12 : Integer.parseInt(digits);
+    }
+    public boolean existsByTitle(String title) {
+        return filmRepository.existsByTitle(title);
+    }
 
 }

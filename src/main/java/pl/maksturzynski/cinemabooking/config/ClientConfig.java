@@ -9,6 +9,6 @@ import org.springframework.web.client.RestClient;
 public class ClientConfig {
     @Bean
     public RestClient restClient(RestClient.Builder builder) {
-        return builder.baseUrl("https://www.ombapi.com").build();
+        return builder.baseUrl("https://www.omdbapi.com").build();
     }
 }

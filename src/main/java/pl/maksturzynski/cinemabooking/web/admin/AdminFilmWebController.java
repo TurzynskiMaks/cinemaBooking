@@ -74,4 +74,23 @@ public class AdminFilmWebController {
         return "redirect:/admin/films";
 
     }
+
+    @PostMapping("/fetch")
+    public String fetchFromApi(@RequestParam String title, RedirectAttributes redirectAttributes) {
+        try {
+            // Sprawdzamy czy film już jest, żeby nie robić śmietnika
+            if (filmService.existsByTitle(title)) {
+                redirectAttributes.addFlashAttribute("error", "Film '" + title + "' jest już w Twojej bazie!");
+                return "redirect:/admin/films";
+            }
+
+            filmService.importFromExternalApi(title);
+            redirectAttributes.addFlashAttribute("message", "Pomyślnie zaimportowano film: " + title);
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Błąd importu: " + e.getMessage());
+        }
+
+        return "redirect:/admin/films";
+    }
 }

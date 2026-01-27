@@ -8,5 +8,6 @@ public record MovieExternalDto (
     @JsonProperty("Rated") String rated,
     @JsonProperty("Director") String director,
     @JsonProperty("Actors") String actors,
-    @JsonProperty("Poster") String posterUrl
+    @JsonProperty("Poster") String posterUrl,
+    @JsonProperty("Response") String response
 ) {}

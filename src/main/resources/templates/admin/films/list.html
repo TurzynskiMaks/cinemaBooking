@@ -8,7 +8,17 @@
 <div th:if="${error}" style="color: #b00020; font-weight: 600; margin: 10px 0;">
      Nie można usunąć filmu, ma zaplanowane seanse
 </div>
+<div class="admin-panel">
+    <h3>Importuj nowy film z API</h3>
 
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/admin/films/fetch}" method="post" class="form-inline">
+        <input type="text" name="title" class="form-control" placeholder="Wpisz tytuł filmu (np. Inception)" required>
+        <button type="submit" class="btn btn-primary">Pobierz dane</button>
+    </form>
+</div>
 <div th:if="${success}" style="color: #0a7a0a; font-weight: 600; margin: 10px 0;">
      Film usunięty
 </div>
