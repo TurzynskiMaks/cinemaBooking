@@ -1,5 +1,6 @@
 package pl.maksturzynski.cinemabooking.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import pl.maksturzynski.cinemabooking.repository.SeatReservationRepository;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class SeatHoldCleanupJob {
 

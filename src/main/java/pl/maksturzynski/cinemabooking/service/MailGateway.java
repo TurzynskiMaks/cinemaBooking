@@ -1,6 +1,7 @@
 package pl.maksturzynski.cinemabooking.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,6 +11,7 @@ import pl.maksturzynski.cinemabooking.config.MailProperties;
 import pl.maksturzynski.cinemabooking.domain.entity.BookingOrder;
 import pl.maksturzynski.cinemabooking.exception.BusinessException;
 
+@Slf4j
 @Service
 public class MailGateway {
 

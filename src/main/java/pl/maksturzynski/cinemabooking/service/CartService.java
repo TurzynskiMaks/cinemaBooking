@@ -2,6 +2,7 @@ package pl.maksturzynski.cinemabooking.service;
 
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.maksturzynski.cinemabooking.domain.cart.TicketType;
 import pl.maksturzynski.cinemabooking.domain.entity.Screening;
@@ -12,6 +13,7 @@ import pl.maksturzynski.cinemabooking.repository.SeatRepository;
 import pl.maksturzynski.cinemabooking.web.vm.CartItemVm;
 import pl.maksturzynski.cinemabooking.web.vm.CartVm;
 
+@Slf4j
 @Service
 public class CartService {
 

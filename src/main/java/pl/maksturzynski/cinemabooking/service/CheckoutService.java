@@ -2,6 +2,7 @@ package pl.maksturzynski.cinemabooking.service;
 
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.maksturzynski.cinemabooking.domain.entity.*;
@@ -13,6 +14,7 @@ import pl.maksturzynski.cinemabooking.web.vm.CartVm;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CheckoutService {
 

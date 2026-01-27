@@ -1,6 +1,7 @@
 package pl.maksturzynski.cinemabooking.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.maksturzynski.cinemabooking.dao.SalesStatsDao;
 import pl.maksturzynski.cinemabooking.dto.admin.DailySalesRow;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class SalesStatsService {
 

@@ -1,6 +1,7 @@
 package pl.maksturzynski.cinemabooking.web;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import pl.maksturzynski.cinemabooking.service.RepertoireService;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Controller
 public class RepertoireWebController {
 
